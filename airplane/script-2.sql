@@ -301,3 +301,303 @@ BEGIN
     PRINT 'Tabla "pieces_of_luggage" creada exitosamente.';
 END
 GO
+-- poblar base de datos
+BEGIN TRY
+    -- Iniciar la transacción
+    BEGIN TRANSACTION;
+
+    -- Insertar países
+    IF NOT EXISTS (SELECT * FROM country WHERE country_name = 'Bolivia')
+    BEGIN
+        INSERT INTO country (country_name, iso_code) VALUES ('Bolivia', 'BO');
+    END
+
+    IF NOT EXISTS (SELECT * FROM country WHERE country_name = 'Argentina')
+    BEGIN
+        INSERT INTO country (country_name, iso_code) VALUES ('Argentina', 'AR');
+    END
+
+    IF NOT EXISTS (SELECT * FROM country WHERE country_name = 'Brasil')
+    BEGIN
+        INSERT INTO country (country_name, iso_code) VALUES ('Brasil', 'BR');
+    END
+
+    IF NOT EXISTS (SELECT * FROM country WHERE country_name = 'Chile')
+    BEGIN
+        INSERT INTO country (country_name, iso_code) VALUES ('Chile', 'CL');
+    END
+
+    IF NOT EXISTS (SELECT * FROM country WHERE country_name = 'Perú')
+    BEGIN
+        INSERT INTO country (country_name, iso_code) VALUES ('Perú', 'PE');
+    END
+
+    -- Insertar ciudades de Bolivia
+    IF NOT EXISTS (SELECT * FROM city WHERE city_name = 'La Paz')
+    BEGIN
+        INSERT INTO city (city_name, zip_code, country_id) VALUES
+        ('La Paz', '0001', (SELECT id FROM country WHERE country_name = 'Bolivia'));
+    END
+
+    IF NOT EXISTS (SELECT * FROM city WHERE city_name = 'Santa Cruz')
+    BEGIN
+        INSERT INTO city (city_name, zip_code, country_id) VALUES
+        ('Santa Cruz', '0002', (SELECT id FROM country WHERE country_name = 'Bolivia'));
+    END
+
+    IF NOT EXISTS (SELECT * FROM city WHERE city_name = 'Cochabamba')
+    BEGIN
+        INSERT INTO city (city_name, zip_code, country_id) VALUES
+        ('Cochabamba', '0003', (SELECT id FROM country WHERE country_name = 'Bolivia'));
+    END
+
+    IF NOT EXISTS (SELECT * FROM city WHERE city_name = 'Sucre')
+    BEGIN
+        INSERT INTO city (city_name, zip_code, country_id) VALUES
+        ('Sucre', '0004', (SELECT id FROM country WHERE country_name = 'Bolivia'));
+    END
+
+    IF NOT EXISTS (SELECT * FROM city WHERE city_name = 'Potosí')
+    BEGIN
+        INSERT INTO city (city_name, zip_code, country_id) VALUES
+        ('Potosí', '0005', (SELECT id FROM country WHERE country_name = 'Bolivia'));
+    END
+
+    -- Insertar clientes en Bolivia
+    IF NOT EXISTS (SELECT * FROM customer WHERE name = 'Juan Perez')
+    BEGIN
+        INSERT INTO customer (name, date_of_birth) VALUES
+        ('Juan Perez', '1985-06-15'),
+        ('María Gomez', '1990-02-20'),
+        ('Carlos Quispe', '1980-11-30'),
+        ('Ana Condori', '1975-07-25'),
+        ('Luis Mamani', '1995-01-05');
+    END
+
+    -- Insertar tarjetas de pasajero frecuente
+    IF NOT EXISTS (SELECT * FROM frequent_flyer_card WHERE ftc_number = 123456)
+    BEGIN
+        INSERT INTO frequent_flyer_card (ftc_number, miles, meal_code, customer_id) 
+        VALUES 
+        (123456, 10000, 'VGML', (SELECT id FROM customer WHERE name = 'Juan Perez')),
+        (789012, 20000, 'GLUT', (SELECT id FROM customer WHERE name = 'María Gomez')),
+        (345678, 15000, 'KSML', (SELECT id FROM customer WHERE name = 'Carlos Quispe')),
+        (901234, 25000, 'HNML', (SELECT id FROM customer WHERE name = 'Ana Condori')),
+        (567890, 5000, 'VJML', (SELECT id FROM customer WHERE name = 'Luis Mamani'));
+    END
+
+    -- Insertar nacionalidades
+    IF NOT EXISTS (SELECT * FROM nationality WHERE name = 'Boliviana')
+    BEGIN
+        INSERT INTO nationality (name) VALUES
+        ('Boliviana'),
+        ('Argentina'),
+        ('Brasileña'),
+        ('Chilena'),
+        ('Peruana');
+    END
+
+    -- Insertar pasaportes
+    IF NOT EXISTS (SELECT * FROM passport WHERE passport_number = 'BO123456')
+    BEGIN
+        INSERT INTO passport (passport_number, issue_date, expiration_date, customer_id, nationality_id) 
+        VALUES 
+        ('BO123456', '2020-01-01', '2030-01-01', 
+         (SELECT id FROM customer WHERE name = 'Juan Perez'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('BO654321', '2021-06-15', '2031-06-15', 
+         (SELECT id FROM customer WHERE name = 'María Gomez'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('BO789123', '2019-11-01', '2029-11-01', 
+         (SELECT id FROM customer WHERE name = 'Carlos Quispe'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('BO321987', '2022-03-10', '2032-03-10', 
+         (SELECT id FROM customer WHERE name = 'Ana Condori'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('BO456789', '2023-07-20', '2033-07-20', 
+         (SELECT id FROM customer WHERE name = 'Luis Mamani'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana'));
+    END
+
+    -- Insertar documentos de identidad
+    IF NOT EXISTS (SELECT * FROM identity_document WHERE document_number = 'IDBOL123456')
+    BEGIN
+        INSERT INTO identity_document (document_type, document_number, customer_id, nationality_id) 
+        VALUES 
+        ('Cédula de Identidad', 'IDBOL123456', 
+         (SELECT id FROM customer WHERE name = 'Juan Perez'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('Licencia de Conducir', 'IDBOL654321', 
+         (SELECT id FROM customer WHERE name = 'María Gomez'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('Pasaporte', 'IDBOL789123', 
+         (SELECT id FROM customer WHERE name = 'Carlos Quispe'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('Cédula de Identidad', 'IDBOL321987', 
+         (SELECT id FROM customer WHERE name = 'Ana Condori'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana')),
+        ('Licencia de Conducir', 'IDBOL456789', 
+         (SELECT id FROM customer WHERE name = 'Luis Mamani'), 
+         (SELECT id FROM nationality WHERE name = 'Boliviana'));
+    END
+
+    -- Insertar aeropuertos en Bolivia
+    IF NOT EXISTS (SELECT * FROM airport WHERE name = 'Aeropuerto Internacional El Alto')
+    BEGIN
+        INSERT INTO airport (name, city_id) VALUES
+        ('Aeropuerto Internacional El Alto', (SELECT id FROM city WHERE city_name = 'La Paz')),
+        ('Aeropuerto Internacional Viru Viru', (SELECT id FROM city WHERE city_name = 'Santa Cruz')),
+        ('Aeropuerto Internacional Jorge Wilstermann', (SELECT id FROM city WHERE city_name = 'Cochabamba'));
+    END
+
+    -- Insertar modelos de avión
+    IF NOT EXISTS (SELECT * FROM plane_model WHERE description = 'Boeing 737')
+    BEGIN
+        INSERT INTO plane_model (description, graphic) VALUES
+        ('Boeing 737', 'graphic_737.png'),
+        ('Airbus A320', 'graphic_a320.png'),
+        ('Boeing 777', 'graphic_777.png'),
+        ('Airbus A380', 'graphic_a380.png');
+    END
+
+    -- Insertar números de vuelo
+    IF NOT EXISTS (SELECT * FROM flight_number WHERE departure_time = '2024-09-01 08:00:00')
+    BEGIN
+        INSERT INTO flight_number (departure_time, description, type, airline, start_airport_id, goal_airport_id, plane_model_id) 
+        VALUES 
+        ('2024-09-01 08:00:00', 'Vuelo de La Paz a Santa Cruz', 'Doméstico', 'Boliviana de Aviación', 
+         (SELECT id FROM airport WHERE name = 'Aeropuerto Internacional El Alto'), 
+         (SELECT id FROM airport WHERE name = 'Aeropuerto Internacional Viru Viru'), 
+         (SELECT id FROM plane_model WHERE description = 'Boeing 737')),
+        ('2024-09-02 09:00:00', 'Vuelo de Cochabamba a La Paz', 'Doméstico', 'Amaszonas', 
+         (SELECT id FROM airport WHERE name = 'Aeropuerto Internacional Jorge Wilstermann'), 
+         (SELECT id FROM airport WHERE name = 'Aeropuerto Internacional El Alto'), 
+         (SELECT id FROM plane_model WHERE description = 'Airbus A320'));
+    END
+
+    -- Insertar categorías
+    IF NOT EXISTS (SELECT * FROM category WHERE name = 'Económica')
+    BEGIN
+        INSERT INTO category (name, description) VALUES
+        ('Económica', 'Clase económica estándar'),
+        ('Negocios', 'Clase de negocios con servicios premium'),
+        ('Primera Clase', 'Servicios y comodidades de lujo');
+    END
+
+    -- Insertar vuelos
+    IF NOT EXISTS (SELECT * FROM flight WHERE boarding_time = '2024-09-01 08:00:00')
+    BEGIN
+        INSERT INTO flight (boarding_time, flight_date, gate, check_in_counter, flight_number_id, category_id) 
+        VALUES 
+        ('2024-09-01 08:00:00', '2024-09-01', 'A1', 1, 
+         (SELECT id FROM flight_number WHERE departure_time = '2024-09-01 08:00:00'), 
+         (SELECT id FROM category WHERE name = 'Económica')),
+        ('2024-09-02 09:00:00', '2024-09-02', 'B1', 2, 
+         (SELECT id FROM flight_number WHERE departure_time = '2024-09-02 09:00:00'), 
+         (SELECT id FROM category WHERE name = 'Negocios'));
+    END
+
+    -- Insertar aviones
+    IF NOT EXISTS (SELECT * FROM airplane WHERE registration_number = 'CP1234')
+    BEGIN
+        INSERT INTO airplane (registration_number, begin_of_operation, status, plane_model_id) 
+        VALUES 
+        ('CP1234', '2010-01-01', 'Activo', 
+         (SELECT id FROM plane_model WHERE description = 'Boeing 737')),
+        ('CP5678', '2015-05-15', 'Activo', 
+         (SELECT id FROM plane_model WHERE description = 'Airbus A320'));
+    END
+
+    -- Insertar asientos
+    IF NOT EXISTS (SELECT * FROM seat WHERE location = '1A')
+    BEGIN
+        INSERT INTO seat (size, number, location, plane_model_id) 
+        VALUES 
+        ('Económica', 1, '1A', (SELECT id FROM plane_model WHERE description = 'Boeing 737')),
+        ('Económica', 2, '1B', (SELECT id FROM plane_model WHERE description = 'Boeing 737')),
+        ('Negocios', 3, '2A', (SELECT id FROM plane_model WHERE description = 'Airbus A320')),
+        ('Negocios', 4, '2B', (SELECT id FROM plane_model WHERE description = 'Airbus A320'));
+    END
+
+    -- Insertar boletos
+    IF NOT EXISTS (SELECT * FROM ticket WHERE ticketing_code = 'BOLETO001')
+    BEGIN
+        INSERT INTO ticket (ticketing_code, number, customer_id) 
+        VALUES 
+        ('BOLETO001', 1, (SELECT id FROM customer WHERE name = 'Juan Perez')),
+        ('BOLETO002', 1, (SELECT id FROM customer WHERE name = 'María Gomez')),
+        ('BOLETO003', 1, (SELECT id FROM customer WHERE name = 'Carlos Quispe')),
+        ('BOLETO004', 1, (SELECT id FROM customer WHERE name = 'Ana Condori')),
+        ('BOLETO005', 1, (SELECT id FROM customer WHERE name = 'Luis Mamani'));
+    END
+
+    -- Insertar cupones
+    IF NOT EXISTS (SELECT * FROM coupon WHERE ticket_code = 'BOLETO001')
+    BEGIN
+        INSERT INTO coupon (date_of_redemption, class, standby, meal_code, ticket_code, flight_id) 
+        VALUES 
+        ('2024-09-01', 'E', 0, 'VGML', 'BOLETO001', 
+         (SELECT id FROM flight WHERE boarding_time = '2024-09-01 08:00:00')),
+        ('2024-09-02', 'B', 1, 'GLUT', 'BOLETO002', 
+         (SELECT id FROM flight WHERE boarding_time = '2024-09-02 09:00:00'));
+    END
+
+    -- Insertar asientos disponibles
+    IF NOT EXISTS (SELECT * FROM available_seat WHERE seat_id = (SELECT id FROM seat WHERE location = '1A'))
+    BEGIN
+        INSERT INTO available_seat (flight_id, seat_id) 
+        VALUES 
+        ((SELECT id FROM flight WHERE flight_date = '2024-09-01'), 
+         (SELECT id FROM seat WHERE location = '1A')),
+        ((SELECT id FROM flight WHERE flight_date = '2024-09-01'), 
+         (SELECT id FROM seat WHERE location = '1B')),
+        ((SELECT id FROM flight WHERE flight_date = '2024-09-02'), 
+         (SELECT id FROM seat WHERE location = '2A')),
+        ((SELECT id FROM flight WHERE flight_date = '2024-09-02'), 
+         (SELECT id FROM seat WHERE location = '2B'));
+    END
+
+    -- Insertar piezas de equipaje
+    IF NOT EXISTS (SELECT * FROM pieces_of_luggage WHERE coupon_id = (SELECT id FROM coupon WHERE ticket_code = 'BOLETO001'))
+    BEGIN
+        INSERT INTO pieces_of_luggage (number, weight, coupon_id) 
+        VALUES 
+        (2, 23.0, (SELECT id FROM coupon WHERE ticket_code = 'BOLETO001')),
+        (1, 15.0, (SELECT id FROM coupon WHERE ticket_code = 'BOLETO002'));
+    END
+
+    -- Confirmar la transacción
+    COMMIT TRANSACTION;
+    PRINT 'Datos insertados correctamente.';
+END TRY
+BEGIN CATCH
+    -- Deshacer la transacción en caso de error
+    ROLLBACK TRANSACTION;
+    PRINT 'Ocurrió un error al insertar los datos: ' + ERROR_MESSAGE();
+END CATCH;
+GO
+
+-- Listar todos los clientes y sus respectivas ciudades en Bolivia
+SELECT c.name AS NombreCliente, ci.city_name AS NombreCiudad
+FROM customer c
+JOIN frequent_flyer_card ffc ON c.id = ffc.customer_id
+JOIN passport p ON c.id = p.customer_id
+JOIN nationality n ON p.nationality_id = n.id
+JOIN country co ON n.name = 'Boliviana'
+JOIN city ci ON co.id = ci.country_id;
+
+-- Listar todos los vuelos que parten de La Paz
+SELECT fn.description AS DescripcionVuelo, a.name AS NombreAeropuerto, fn.departure_time AS HoraSalida
+FROM flight_number fn
+JOIN airport a ON fn.start_airport_id = a.id
+JOIN city ci ON a.city_id = ci.id
+WHERE ci.city_name = 'La Paz';
+
+-- Mostrar los boletos y nombres de clientes para el vuelo que sale de La Paz a Santa Cruz
+SELECT t.ticketing_code AS CodigoBoleto, c.name AS NombreCliente, f.flight_date AS FechaVuelo, fn.description AS DescripcionVuelo
+FROM ticket t
+JOIN customer c ON t.customer_id = c.id
+JOIN coupon cp ON t.ticketing_code = cp.ticket_code
+JOIN flight f ON cp.flight_id = f.id
+JOIN flight_number fn ON f.flight_number_id = fn.id
+WHERE fn.description = 'Vuelo de La Paz a Santa Cruz';
